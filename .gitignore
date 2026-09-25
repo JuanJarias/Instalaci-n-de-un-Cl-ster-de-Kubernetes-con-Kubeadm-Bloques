@@ -1,1 +1,24 @@
-Reglas para impedir subir kubeconfig, admin.conf, credenciales y archivos sensibles.
+# Kubeconfig con acceso administrativo
+admin.conf
+kubeconfig
+*.kubeconfig
+.kube/
+
+# Tokens y datos temporales de kubeadm
+join-command.txt
+kubeadm-token.txt
+*.token
+
+# Llaves y certificados
+*.pem
+*.key
+*.crt
+id_rsa
+id_rsa.pub
+
+# Archivos locales de VirtualBox/Vagrant
+.vagrant/
+*.log
+
+# Variables locales
+scripts/variables-cluster.sh
