@@ -1,0 +1,57 @@
+# frozen_string_literal: true
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/rocky9"
+  config.ssh.insert_key = false
+
+  bridge_adapter = ENV.fetch("BRIDGE_ADAPTER", "CAMBIAR_POR_ADAPTADOR_FISICO")
+
+  nodes = {
+    "k8s-master" => {
+      cpus: 2,
+      memory: 2048,
+      private_ip: "192.168.56.110",
+      mac: "080027560010"
+    },
+    "k8s-worker" => {
+      cpus: 1,
+      memory: 2048,
+      private_ip: "192.168.56.120",
+      mac: "080027560020"
+    }
+  }
+
+  nodes.each do |name, settings|
+    config.vm.define name do |node|
+      node.vm.hostname = "#{name}.lab.local"
+
+      # Adaptador 1: NAT, creado automáticamente por VirtualBox.
+      # Adaptador 2: Bridge, acceso SSH desde la red física.
+      node.vm.network "public_network",
+                      bridge: bridge_adapter,
+                      auto_config: false
+
+      # Adaptador 3: Host-Only adicional para administración desde el host.
+      node.vm.network "private_network",
+                      type: "dhcp",
+                      virtualbox__intnet: false,
+                      auto_config: false
+
+      # Adaptador 4: red privada del laboratorio, compartida con el bastión.
+      # Se configura por DHCP para demostrar la reserva MAC -> IP.
+      node.vm.network "private_network",
+                      type: "dhcp",
+                      mac: settings[:mac],
+                      auto_config: false
+
+      node.vm.provider "virtualbox" do |vb|
+        vb.name = name
+        vb.cpus = settings[:cpus]
+        vb.memory = settings[:memory]
+        vb.customize ["modifyvm", :id, "--ioapic", "on"]
+      end
+
+      node.vm.synced_folder ".", "/vagrant", disabled: false
+    end
+  end
+end
