@@ -2,11 +2,10 @@
 
 Este documento organiza las capturas de pantalla utilizadas como evidencia de la implementación del clúster Kubernetes con kubeadm sobre Rocky Linux 9.7.
 
-> Importante: antes de tomar una captura, oculté tokens de `kubeadm join`, hashes, contraseñas, llaves privadas y el contenido completo de `admin.conf`.
 
 ## 1. Infraestructura virtual
 
-**Captura sugerida:** VirtualBox Manager mostrando `dns-dhcp01`, `k8s-master` y `k8s-worker`.
+ VirtualBox Manager mostrando `dns-dhcp01`, `k8s-master` y `k8s-worker`.
 
 **Comentario:**  
 En esta imagen se observa la infraestructura del laboratorio. El servidor bastión ya existía y actúa como servidor DHCP, DNS y punto central de administración. Se crearon dos VMs adicionales: `k8s-master`, que funciona como control plane, y `k8s-worker`, encargado de ejecutar las cargas de trabajo.
@@ -15,7 +14,7 @@ En esta imagen se observa la infraestructura del laboratorio. El servidor basti�
 
 ## 2. Interfaces de red
 
-**Captura sugerida:** Configuración de red del master en VirtualBox.
+ Configuración de red del master en VirtualBox.
 
 **Comentario:**  
 El nodo master cuenta con cuatro adaptadores de red: NAT para salida a Internet, Bridge para acceso SSH desde la red física, Host-Only para administración desde el host y una interfaz privada conectada a la red `192.168.56.0/24`, donde se comunica con el bastión y el worker.
@@ -24,7 +23,7 @@ El nodo master cuenta con cuatro adaptadores de red: NAT para salida a Internet,
 
 ## 3. Configuración DHCP
 
-**Captura sugerida:** Salida de `sudo cat /etc/dhcp/dhcpd.conf` en el bastión.
+ Salida de `sudo cat /etc/dhcp/dhcpd.conf` en el bastión.
 
 **Comentario:**  
 El servidor DHCP del bastión entrega el dominio `lab.local` y el DNS `192.168.56.10`. Además, se configuraron reservas basadas en MAC para que `k8s-master` obtenga la IP `192.168.56.110` y `k8s-worker` la IP `192.168.56.120`.
@@ -33,7 +32,7 @@ El servidor DHCP del bastión entrega el dominio `lab.local` y el DNS `192.168.5
 
 ## 4. Resolución DNS
 
-**Captura sugerida:** `getent hosts k8s-master.lab.local` y `getent hosts k8s-worker.lab.local`.
+ `getent hosts k8s-master.lab.local` y `getent hosts k8s-worker.lab.local`.
 
 **Comentario:**  
 La resolución de nombres confirma que el servicio BIND del bastión conoce los registros de ambos nodos Kubernetes y permite usar nombres en lugar de direcciones IP durante la administración.
@@ -42,7 +41,7 @@ La resolución de nombres confirma que el servicio BIND del bastión conoce los 
 
 ## 5. Preparación de nodos
 
-**Captura sugerida:**
+
 
 ```bash
 hostnamectl --static
@@ -59,7 +58,6 @@ Los prerrequisitos del sistema fueron aplicados en master y worker. Swap quedó 
 
 ## 6. Runtime de contenedores
 
-**Captura sugerida:**
 
 ```bash
 systemctl is-active containerd
@@ -73,7 +71,7 @@ Containerd fue instalado como runtime de contenedores. La configuración `System
 
 ## 7. Inicialización del control plane
 
-**Captura sugerida:** Final de `sudo kubeadm init`.
+Final de `sudo kubeadm init`.
 
 **Comentario:**  
 El comando `kubeadm init` inicializó el control plane en `k8s-master` usando la dirección `192.168.56.110` y la red de Pods `10.244.0.0/16`. El token de unión generado fue ocultado porque es una credencial temporal.
@@ -82,7 +80,6 @@ El comando `kubeadm init` inicializó el control plane en `k8s-master` usando la
 
 ## 8. Red de Pods con Flannel
 
-**Captura sugerida:**
 
 ```bash
 kubectl get pods -n kube-flannel -o wide
@@ -95,7 +92,6 @@ Flannel fue instalado como plugin CNI. Sus Pods se ejecutan en los nodos del cl�
 
 ## 9. Nodos Ready
 
-**Captura sugerida:**
 
 ```bash
 kubectl get nodes -o wide
@@ -108,7 +104,7 @@ La imagen valida que `k8s-master` y `k8s-worker` están en estado `Ready`. Este 
 
 ## 10. Pods del sistema
 
-**Captura sugerida:**
+
 
 ```bash
 kubectl get pods -A -o wide
@@ -121,7 +117,6 @@ Los componentes principales del clúster, como CoreDNS, kube-proxy y Flannel, se
 
 ## 11. Deployment en worker
 
-**Captura sugerida:**
 
 ```bash
 kubectl get pods -l app=nginx-demo -o wide
@@ -134,7 +129,6 @@ El Deployment de Nginx creó dos réplicas y, mediante `nodeSelector`, ambas se 
 
 ## 12. Servicio NodePort
 
-**Captura sugerida:**
 
 ```bash
 kubectl get svc nginx-demo
@@ -147,7 +141,6 @@ El servicio de tipo NodePort expone la aplicación Nginx en el puerto `30080`. K
 
 ## 13. Prueba de acceso desde bastión
 
-**Captura sugerida:**
 
 ```bash
 curl -I http://192.168.56.120:30080
@@ -160,7 +153,6 @@ El bastión consumió la aplicación mediante la IP del worker y el NodePort asi
 
 ## 14. Prueba CoreDNS
 
-**Captura sugerida:**
 
 ```bash
 kubectl exec -it dns-test -- nslookup kubernetes.default.svc.cluster.local
