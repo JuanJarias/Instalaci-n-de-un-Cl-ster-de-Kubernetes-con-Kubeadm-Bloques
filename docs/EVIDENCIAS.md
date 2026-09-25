@@ -1,0 +1,1 @@
+Plantilla de capturas, comandos y textos humanizados para documentar cada imagen requerida por la consigna.

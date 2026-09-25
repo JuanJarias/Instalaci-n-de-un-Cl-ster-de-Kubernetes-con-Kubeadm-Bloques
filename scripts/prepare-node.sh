@@ -1,0 +1,1 @@
+Script idempotente para ejecutar como root en master y worker: desactiva swap, deja SELinux permisivo, configura módulos overlay/br_netfilter, sysctl, containerd con SystemdCgroup y firewalld.

@@ -1,0 +1,1 @@
+Guía detallada, humanizada y adaptable para desplegar un clúster Kubernetes de tres VMs (bastión existente, master y worker), con redes VirtualBox, integración DHCP/DNS, prerequisitos Rocky Linux 9.7, containerd, kubeadm, Flannel, administración remota, Nginx NodePort, DNS interno, solución de problemas y guía de capturas.

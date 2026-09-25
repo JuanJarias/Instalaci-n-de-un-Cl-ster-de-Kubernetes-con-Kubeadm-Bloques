@@ -1,0 +1,1 @@
+Script para instalar kubeadm, kubelet y kubectl desde el repositorio RPM oficial configurable por versión.
